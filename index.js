@@ -8,6 +8,7 @@ import errorHandler from "./middleware/errorHandler.js";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 import postRoutes from "./routes/post.js";
+import ratingRoutes from "./routes/rating.js";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger/swaggerConfig.js";
@@ -41,6 +42,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/ratings", ratingRoutes);
 
 // Error Handler
 app.use(errorHandler);

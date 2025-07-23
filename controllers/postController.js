@@ -6,17 +6,9 @@ export const addPost = asyncHandler(async (req, res) => {
   const { title, content, category, user, fees, center_address, timings } =
     req.body;
 
-  if (
-    !title ||
-    !content ||
-    !category ||
-    !user ||
-    !fees ||
-    !center_address ||
-    !timings
-  ) {
+  if (!title || !content || !category || !user || !center_address) {
     throw new AppError(
-      "Title, Content, category, user, fees, center address and timings are required",
+      "Title, Content, category, user, center and address are required",
       400
     );
   }

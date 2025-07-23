@@ -51,15 +51,15 @@ const postSchema = new mongoose.Schema(
     },
     fees: {
       type: String,
-      required: true,
+      required: false,
     },
     center_address: {
       type: String,
       required: true,
     },
     timings: {
-      type: String,
-      required: true,
+      type: [String],
+      required: false,
     },
   },
   { timestamps: true }

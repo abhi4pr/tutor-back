@@ -44,6 +44,31 @@ export const signup = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "User registered successfully" });
 });
 
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_VERIFY_SECRET || "your_verify_secret"
+    );
+
+    const user = await User.findById(decoded.id);
+    if (!user) throw new AppError("User not found", 404);
+
+    if (user.verified) {
+      return res.status(200).json({ message: "Email already verified" });
+    }
+
+    user.verified = true;
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully" });
+  } catch (err) {
+    throw new AppError("Invalid or expired token", 400);
+  }
+});
+
 export const login = asyncHandler(async (req, res) => {
   const { error } = loginSchema.validate(req.body);
   if (error) throw new AppError(error.details[0].message, 400);

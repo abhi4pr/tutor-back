@@ -3,23 +3,19 @@ import AppError from "../utils/AppError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 export const addPost = asyncHandler(async (req, res) => {
-  const { title, content, category } = req.body;
+  const { title, content, category, user } = req.body;
 
-  if (!title || !category) {
-    throw new AppError("Title and category are required", 400);
+  if (!title || !content || !category || !user) {
+    throw new AppError("Title, Content, category and user are required", 400);
   }
 
-  const imagePaths = req.fileUrls || [];
-
-  if (imagePaths.length > 3) {
-    throw new AppError("You can upload a maximum of 3 images", 400);
-  }
+  const imagePath = req.fileUrl || "";
 
   const post = await Post.create({
     title,
     content,
     category,
-    images: imagePaths,
+    post_img: imagePath,
     user: req.user.id,
   });
 
@@ -29,56 +25,28 @@ export const addPost = asyncHandler(async (req, res) => {
   });
 });
 
-export const getAllPosts = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  const posts = await Post.find()
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .populate("user", "-password");
-
-  const totalPosts = await Post.countDocuments();
-
-  res.status(200).json({
-    count: posts.length,
-    total: totalPosts,
-    page,
-    totalPages: Math.ceil(totalPosts / limit),
-    posts,
-  });
-});
-
 export const getPostById = asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.id).populate(
+  const post = await Post.findById(req.params._id).populate(
     "user",
-    "-password -__v"
+    "-password"
   );
 
   if (!post) throw new AppError("Post not found", 404);
 
-  res.status(200).json({ post });
+  res.status(200).json({ message: "Post retrieved successfully", post });
 });
 
 export const updatePost = asyncHandler(async (req, res) => {
   const updates = req.body;
 
-  if (req.files) {
-    const imagePaths = req.fileUrls || [];
-
-    if (imagePaths.length > 3) {
-      throw new AppError("You can upload a maximum of 3 images", 400);
-    }
-
-    updates.images = imagePaths;
+  if (req.file) {
+    updates.post_img = req.fileUrl;
   }
 
   const updatedPost = await Post.findByIdAndUpdate(
-    req.params.id,
+    req.params._id,
     { $set: updates },
-    { new: true, runValidators: true }
+    { new: true }
   );
 
   if (!updatedPost) throw new AppError("Post not found", 404);
@@ -90,7 +58,7 @@ export const updatePost = asyncHandler(async (req, res) => {
 });
 
 export const deletePost = asyncHandler(async (req, res) => {
-  const post = await Post.findByIdAndDelete(req.params.id);
+  const post = await Post.findByIdAndDelete(req.params._id);
 
   if (!post) throw new AppError("Post not found", 404);
 
@@ -99,9 +67,8 @@ export const deletePost = asyncHandler(async (req, res) => {
   });
 });
 
-// Get all posts of a specific user
 export const getAllPostsOfUser = asyncHandler(async (req, res) => {
-  const userId = req.params.userId;
+  const userId = req.params._id;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;

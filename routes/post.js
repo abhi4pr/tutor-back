@@ -1,32 +1,32 @@
 import express from "express";
 import {
   addPost,
-  getAllPosts,
   getPostById,
   updatePost,
   deletePost,
+  getAllPostsOfUser,
 } from "../controllers/postController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
-import upload, { fileUploads } from "../middleware/uploadMiddleware.js";
+import upload, { fileUpload } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
 router.post(
-  "/add-post",
+  "/add_post",
   authMiddleware,
-  upload.array("images", 3),
-  fileUploads,
+  upload.single("post_img"),
+  fileUpload,
   addPost
 );
-router.get("/", authMiddleware, getAllPosts);
-router.get("/:id", authMiddleware, getPostById);
+router.get("/single_post/:_id", authMiddleware, getPostById);
 router.put(
-  "/:id",
+  "/:_id",
   authMiddleware,
-  upload.array("images", 3),
-  fileUploads,
+  upload.single("post_img"),
+  fileUpload,
   updatePost
 );
-router.delete("/:id", authMiddleware, deletePost);
+router.delete("/:_id", authMiddleware, deletePost);
+router.get("/get_user_posts/:_id", authMiddleware, getAllPostsOfUser);
 
 export default router;

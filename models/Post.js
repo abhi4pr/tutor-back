@@ -11,15 +11,37 @@ const postSchema = new mongoose.Schema(
     content: {
       type: String,
       trim: true,
+      required: true,
     },
-    images: {
-      type: [String],
+    post_img: {
+      type: String,
       trim: true,
+      required: false,
     },
     category: {
       type: String,
-      enum: ["Default", "Health", "Lifestyle", "Education", "Entertainment"],
-      default: "Default",
+      enum: [
+        "School",
+        "College",
+        "IAS",
+        "IIT-JEE",
+        "NEET",
+        "UPSC",
+        "SSC",
+        "Banking",
+        "CAT",
+        "GATE",
+        "Engineering",
+        "Medical",
+        "Law Entrance",
+        "CA/CS",
+        "Railway Exams",
+        "Defence Exams",
+        "Spoken English",
+        "Soft Skills",
+        "Hobby Classes",
+        "Other",
+      ],
       required: true,
     },
     user: {
@@ -31,10 +53,5 @@ const postSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-function arrayLimit(val) {
-  return val.length <= 3;
-}
-
 const Post = mongoose.model("Post", postSchema);
-
 export default Post;

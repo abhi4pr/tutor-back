@@ -3,6 +3,7 @@ import {
   getUserById,
   updateUser,
   deleteUser,
+  updatePassword,
 } from "../controllers/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import upload, { fileUpload } from "../middleware/uploadMiddleware.js";
@@ -17,6 +18,7 @@ router.put(
   fileUpload,
   updateUser
 );
+router.put("/update_password/:_id", authMiddleware, updatePassword);
 router.delete("/:id", authMiddleware, deleteUser);
 
 export default router;

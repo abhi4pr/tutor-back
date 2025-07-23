@@ -49,6 +49,18 @@ const postSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    fees: {
+      type: String,
+      required: true,
+    },
+    center_address: {
+      type: String,
+      required: true,
+    },
+    timings: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

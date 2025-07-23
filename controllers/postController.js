@@ -3,10 +3,22 @@ import AppError from "../utils/AppError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 export const addPost = asyncHandler(async (req, res) => {
-  const { title, content, category, user } = req.body;
+  const { title, content, category, user, fees, center_address, timings } =
+    req.body;
 
-  if (!title || !content || !category || !user) {
-    throw new AppError("Title, Content, category and user are required", 400);
+  if (
+    !title ||
+    !content ||
+    !category ||
+    !user ||
+    !fees ||
+    !center_address ||
+    !timings
+  ) {
+    throw new AppError(
+      "Title, Content, category, user, fees, center address and timings are required",
+      400
+    );
   }
 
   const imagePath = req.fileUrl || "";
@@ -16,7 +28,10 @@ export const addPost = asyncHandler(async (req, res) => {
     content,
     category,
     post_img: imagePath,
-    user: req.user.id,
+    user,
+    fees,
+    center_address,
+    timings,
   });
 
   res.status(201).json({

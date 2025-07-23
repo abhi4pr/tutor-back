@@ -1,0 +1,8 @@
+paths:
+  /api/user:
+    get:
+      summary: Get all users
+      tags: [User]
+      responses:
+        200:
+          description: List of users

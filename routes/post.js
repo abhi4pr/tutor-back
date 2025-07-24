@@ -5,6 +5,7 @@ import {
   updatePost,
   deletePost,
   getAllPostsOfUser,
+  searchPosts,
 } from "../controllers/postController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import upload, { fileUpload } from "../middleware/uploadMiddleware.js";
@@ -28,5 +29,6 @@ router.put(
 );
 router.delete("/:_id", authMiddleware, deletePost);
 router.get("/get_user_posts/:_id", authMiddleware, getAllPostsOfUser);
+router.get("/search", authMiddleware, searchPosts);
 
 export default router;

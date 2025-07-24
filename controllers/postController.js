@@ -96,3 +96,24 @@ export const getAllPostsOfUser = asyncHandler(async (req, res) => {
     posts,
   });
 });
+
+export const searchPosts = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+
+  if (!q || q.trim() === "") {
+    throw new AppError("Search query is required", 400);
+  }
+
+  const words = q.trim().split(/\s+/); // split by whitespace
+  const regexes = words.map((word) => new RegExp(word, "i"));
+
+  const posts = await Post.find({
+    $or: [{ title: { $in: regexes } }, { center_address: { $in: regexes } }],
+  }).populate("user", "-password");
+
+  res.status(200).json({
+    message: "Posts found successfully",
+    count: posts.length,
+    posts,
+  });
+});

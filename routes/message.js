@@ -4,6 +4,6 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/chats/:_userid/:_otheruserid", chats);
+router.get("/chats/:userid/:otheruserid", chats);
 
 export default router;

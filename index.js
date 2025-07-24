@@ -85,6 +85,11 @@ io.on("connection", (socket) => {
   });
 });
 
+// to check if api's running or not
+app.get("/api", (req, res) => {
+  res.status(200).json({ message: "Tutor Center Backend Api's is Running" });
+});
+
 // Error Handler
 app.use(errorHandler);
 

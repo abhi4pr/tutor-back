@@ -9,13 +9,24 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 import postRoutes from "./routes/post.js";
 import ratingRoutes from "./routes/rating.js";
+import messageRoutes from "./routes/message.js";
+import Message from "./models/Message.js";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger/swaggerConfig.js";
+import http from "http";
+import { Server } from "socket.io";
 import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+
+// 3 lines fo code for socket
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" },
+});
+app.set("io", io);
 
 // Middleware
 app.use(cors());
@@ -43,6 +54,36 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/ratings", ratingRoutes);
+app.use("/api/message", messageRoutes);
+
+// Socket io
+io.on("connection", (socket) => {
+  console.log("A user connected: " + socket.id);
+
+  // Join user to their own room
+  socket.on("join", ({ userId }) => {
+    socket.join(userId);
+    console.log(`User ${userId} joined their room`);
+  });
+
+  // Handle sending messages
+  socket.on("send-message", async ({ senderId, receiverId, content }) => {
+    const message = new Message({
+      sender: senderId,
+      receiver: receiverId,
+      content,
+    });
+    await message.save();
+
+    // Emit to receiver and sender
+    io.to(receiverId).emit("receive-message", message);
+    io.to(senderId).emit("receive-message", message);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected: " + socket.id);
+  });
+});
 
 // Error Handler
 app.use(errorHandler);
